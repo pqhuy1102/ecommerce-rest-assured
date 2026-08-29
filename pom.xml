@@ -17,6 +17,7 @@
         <cucumber.version>7.34.4</cucumber.version>
         <testng.version>7.12.0</testng.version>
         <rest-assured.version>6.0.1</rest-assured.version>
+        <jackson.version>2.22.2</jackson.version>
     </properties>
 
     <dependencies>
@@ -55,6 +56,13 @@
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-picocontainer</artifactId>
             <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
 
