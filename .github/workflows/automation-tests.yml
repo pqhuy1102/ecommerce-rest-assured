@@ -1,0 +1,75 @@
+name: Automation tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automation-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: API and UI tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    env:
+      CI: "true"
+      MAVEN_OPTS: "-Dfile.encoding=UTF-8"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Show environment information
+        run: |
+          java -version
+          mvn -version
+          google-chrome --version
+
+      - name: Run API and UI tests
+        run: >
+          mvn
+          --batch-mode
+          --no-transfer-progress
+          clean test
+          "-Dui.headless=true"
+
+      - name: Generate Allure report
+        if: always()
+        run: >
+          mvn
+          --batch-mode
+          --no-transfer-progress
+          allure:report
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-test-reports-${{ github.run_number }}
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            target/allure-results/
+            target/site/allure-maven-plugin/
+            target/cucumber-report.html
+            target/cucumber-report.json
+            target/surefire-reports/
