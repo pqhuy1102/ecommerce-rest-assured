@@ -4,10 +4,15 @@ import api.clients.AccountClient;
 import api.context.AccountContext;
 import api.context.ScenarioContext;
 import api.models.request.AccountRequestDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.BeforeAll;
 import io.cucumber.java.Scenario;
 import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.response.Response;
 
@@ -15,6 +20,7 @@ public class Hooks {
     private final ScenarioContext scenarioContext;
     private final AccountContext accountContext;
     private final AccountClient accountClient;
+    private static boolean isRestAssuredConfigured = false;
 
     public Hooks(ScenarioContext scenarioContext, AccountContext accountContext, AccountClient accountClient) {
         this.accountContext = accountContext;
@@ -27,6 +33,17 @@ public class Hooks {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails(
                 LogDetail.ALL
         );
+    }
+
+    @Before
+    public void setupRestAssured(){
+        if(!isRestAssuredConfigured){
+            ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+            RestAssured.config = RestAssuredConfig.config()
+                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
+                            .jackson2ObjectMapperFactory((cls, charset) -> mapper));
+        }
     }
 
     @After(order = 100)

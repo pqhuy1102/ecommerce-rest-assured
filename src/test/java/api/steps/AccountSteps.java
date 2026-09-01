@@ -33,15 +33,6 @@ public class AccountSteps {
     private Response response;
     private AccountRequestDTO requestUpdateAccount;
 
-    @BeforeClass
-    public void setup() {
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
-        RestAssured.config = RestAssuredConfig.config()
-                .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .jackson2ObjectMapperFactory((cls, charset) -> mapper));
-    }
-
     public AccountSteps(AccountContext accountContext, AccountClient client, ScenarioContext scenarioContext){
         this.accountClient = client;
         this.accountContext = accountContext;

@@ -53,4 +53,20 @@ public final class ConfigManager {
 
         return value;
     }
+
+    public static boolean isUiHeadless(String key){
+        String value = System.getProperty(key);
+
+        if(value == null || value.isBlank()){
+            value = PROPERTIES.getProperty(key);
+        }
+
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Missing configuration property: " + key
+            );
+        }
+
+        return Boolean.parseBoolean(value);
+    }
 }
